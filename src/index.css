@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg-primary: #121110;
+  --color-bg-secondary: #1c1a19;
+  --color-bg-tertiary: #231f1d;
+  --color-accent: #e6d5bc;
+  --color-border-dim: #2d2a28;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  
+  /* Theme: Warm Sunset */
+  --theme-sunset-bg: #1a0f0a;
+  --theme-sunset-accent: #fcd34d;
+  --theme-sunset-border: #3b2014;
+  
+  /* Theme: Forest Morning */
+  --theme-forest-bg: #0b140d;
+  --theme-forest-accent: #86efac;
+  --theme-forest-border: #1a2e1d;
+  
+  /* Theme: Midnight */
+  --theme-midnight-bg: #0f172a;
+  --theme-midnight-accent: #60a5fa;
+  --theme-midnight-border: #1e293b;
+}
+
+@layer base {
+  body {
+    @apply bg-[var(--color-bg-primary)] text-[var(--color-accent)] transition-colors duration-700;
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+  }
+
+  .panel {
+    @apply bg-[var(--color-bg-secondary)] border border-[var(--color-border-dim)] rounded-3xl transition-all duration-300;
+  }
+
+  .panel-dark {
+    @apply bg-[var(--color-bg-tertiary)] border border-[var(--color-border-dim)] rounded-3xl transition-all duration-300;
+  }
+
+  .btn-primary {
+    @apply bg-[var(--color-accent)] text-[var(--color-bg-primary)] rounded-full px-8 py-3 text-xs font-bold uppercase tracking-widest hover:brightness-90 active:scale-95 transition-all cursor-pointer;
+  }
+
+  .btn-outline {
+    @apply border border-[var(--color-border-dim)] rounded-full px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-[var(--color-bg-secondary)] active:scale-95 transition-all cursor-pointer;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 20px rgba(230, 213, 188, 0.3);
+  }
+}
+
+.theme-sunset {
+  --color-bg-primary: var(--theme-sunset-bg);
+  --color-bg-secondary: #26160f;
+  --color-bg-tertiary: #301b13;
+  --color-accent: var(--theme-sunset-accent);
+  --color-border-dim: var(--theme-sunset-border);
+}
+
+.theme-forest {
+  --color-bg-primary: var(--theme-forest-bg);
+  --color-bg-secondary: #122116;
+  --color-bg-tertiary: #192d1e;
+  --color-accent: var(--theme-forest-accent);
+  --color-border-dim: var(--theme-forest-border);
+}
+
+.theme-midnight {
+  --color-bg-primary: var(--theme-midnight-bg);
+  --color-bg-secondary: #172540;
+  --color-bg-tertiary: #1e2d4d;
+  --color-accent: var(--theme-midnight-accent);
+  --color-border-dim: var(--theme-midnight-border);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-border-dim);
+  border-radius: 10px;
+}
