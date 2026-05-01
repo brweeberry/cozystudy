@@ -1,5 +1,4 @@
 import Timer from './components/Timer';
-import SoundMixer from './components/SoundMixer';
 import TaskList from './components/TaskList';
 import LibraryView from './components/LibraryView';
 import StatsView from './components/StatsView';
@@ -26,6 +25,8 @@ export default function App() {
   const [streak, setStreak] = useState(12);
   const [totalFocusTime, setTotalFocusTime] = useState(3420); // in minutes
   const [tasksCompleted, setTasksCompleted] = useState(48);
+  const [avatar, setAvatar] = useState('https://i.pravatar.cc/150?u=cozy');
+  const [frameColor, setFrameColor] = useState('var(--color-accent)');
 
   const gainXp = (amount: number) => {
     setXp(prev => {
@@ -58,28 +59,32 @@ export default function App() {
       case 'focus':
         return (
           <div className="flex-1 flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-10 min-h-0 pb-10">
-            {/* Left Section: Soundscape (Compact) */}
-            <section className="order-2 lg:order-1 col-span-12 lg:col-span-3 xl:col-span-2 flex flex-col gap-6 lg:overflow-hidden">
-              <div className="panel p-6 flex flex-col min-h-[300px] lg:flex-1 lg:min-h-0 overflow-y-auto no-scrollbar">
-                <SoundMixer />
+            {/* Left Section: Workflow & Goals */}
+            <section className="order-2 lg:order-1 col-span-12 lg:col-span-4 xl:col-span-3 flex flex-col gap-6 lg:overflow-hidden">
+              <div className="panel p-6 flex flex-col min-h-[400px] lg:flex-1 lg:min-h-0 overflow-y-auto no-scrollbar">
+                <TaskList onTaskComplete={() => {
+                    gainXp(50);
+                    setTasksCompleted(prev => prev + 1);
+                }} />
               </div>
-              <motion.div 
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="panel-dark p-6 h-24 lg:h-28 flex items-center gap-4 shrink-0 cursor-pointer group"
-              >
-                <div className="w-10 h-10 lg:w-12 lg:h-12 bg-[var(--color-accent)] rounded-2xl flex items-center justify-center text-[var(--color-bg-primary)] shadow-lg group-hover:rotate-6 transition-transform">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              <div className="panel-dark p-6 flex flex-col gap-4 shrink-0">
+                <div className="flex justify-between text-[10px] uppercase tracking-widest font-black opacity-30">
+                  <span>Growth Progress</span>
+                  <span>Lvl {level}</span>
                 </div>
-                <div>
-                  <p className="text-[10px] opacity-40 uppercase tracking-widest font-black">Quick Action</p>
-                  <p className="text-sm font-bold tracking-tight">Active Room</p>
+                <div className="w-full h-1.5 bg-[var(--color-bg-primary)] rounded-full overflow-hidden">
+                    <motion.div 
+                        initial={{ width: 0 }}
+                        animate={{ width: `${(xp % 1000) / 10}%` }}
+                        className="h-full bg-[var(--color-accent)] shadow-[0_0_15px_rgba(230,213,188,0.5)]" 
+                    />
                 </div>
-              </motion.div>
+                <p className="text-[10px] opacity-40 font-bold text-center tracking-tight italic">"Audio streaming from YouTube Background."</p>
+              </div>
             </section>
 
-            {/* Center Section: Focus Area (Dominant) */}
-            <section className="order-1 lg:order-2 col-span-12 lg:col-span-6 xl:col-span-8 flex flex-col items-center justify-center border-y lg:border-y-0 lg:border-x border-[var(--color-border-dim)] px-4 lg:px-12 py-10 lg:py-0 relative overflow-hidden rounded-[32px] lg:rounded-[48px] bg-[var(--color-bg-secondary)]/10 shadow-2xl">
+            {/* Right Section: Focus Area (Dominant) */}
+            <section className="order-1 lg:order-2 col-span-12 lg:col-span-8 xl:col-span-9 flex flex-col items-center justify-center border-y lg:border-y-0 lg:border-l border-[var(--color-border-dim)] px-4 lg:px-12 py-10 lg:py-0 relative overflow-hidden rounded-[32px] lg:rounded-[48px] bg-[var(--color-bg-secondary)]/10 shadow-2xl">
               {videoId ? (
                 <div className="absolute inset-0 z-0 pointer-events-none opacity-60 transition-opacity duration-1000 overflow-hidden">
                   <iframe
@@ -101,30 +106,6 @@ export default function App() {
                 }} />
               </div>
             </section>
-
-            {/* Right Section: Workflow (Compact) */}
-            <section className="order-3 lg:order-3 col-span-12 lg:col-span-3 xl:col-span-2 flex flex-col gap-6 lg:overflow-hidden">
-              <div className="panel p-6 flex flex-col min-h-[300px] lg:flex-1 lg:min-h-0 overflow-y-auto no-scrollbar">
-                <TaskList onTaskComplete={() => {
-                    gainXp(50);
-                    setTasksCompleted(prev => prev + 1);
-                }} />
-              </div>
-              <div className="panel-dark p-6 flex flex-col gap-4 shrink-0">
-                <div className="flex justify-between text-[10px] uppercase tracking-widest font-black opacity-30">
-                  <span>Session Goal</span>
-                  <span>75%</span>
-                </div>
-                <div className="w-full h-1.5 bg-[var(--color-bg-primary)] rounded-full overflow-hidden">
-                    <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: "75%" }}
-                        className="h-full bg-[var(--color-accent)] shadow-[0_0_15px_rgba(230,213,188,0.5)]" 
-                    />
-                </div>
-                <p className="text-[10px] opacity-40 font-bold text-center tracking-tight italic">"Stay in the flow."</p>
-              </div>
-            </section>
           </div>
         );
       case 'library':
@@ -141,7 +122,15 @@ export default function App() {
       case 'groups':
         return <GroupsView />;
       case 'profile':
-        return <ProfileView level={level} xp={xp} streak={streak} />;
+        return <ProfileView 
+          level={level} 
+          xp={xp} 
+          streak={streak} 
+          avatar={avatar}
+          frameColor={frameColor}
+          onUpdateAvatar={setAvatar}
+          onUpdateFrame={setFrameColor}
+        />;
       case 'settings':
         return <SettingsView 
           currentTheme={activeTheme} 
@@ -223,7 +212,7 @@ export default function App() {
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3 px-4 py-1.5 bg-[var(--color-bg-tertiary)] border border-[var(--color-border-dim)] rounded-full opacity-60">
             <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent)] animate-pulse shadow-[0_0_8px_var(--color-accent)]" />
-            <span className="tracking-widest">Ambient: Evening Rain</span>
+            <span className="tracking-widest">YouTube Audio Active</span>
           </div>
           <span className="opacity-20 hidden md:block">Session #001</span>
         </div>

@@ -1,5 +1,6 @@
+import * as React from 'react';
 import { motion } from 'motion/react';
-import { User, Award, Shield, Star, Hexagon, Camera, Edit2 } from 'lucide-react';
+import { User, Award, Shield, Star, Hexagon, Camera, Edit2, Sparkles } from 'lucide-react';
 
 const BADGES = [
     { name: 'Early Bird', icon: <Star size={16} />, color: 'bg-yellow-500/20 text-yellow-500' },
@@ -14,27 +15,58 @@ const ACHIEVEMENTS = [
     { title: 'Night Owl Hero', date: 'Aug 15, 2023', progress: 40 },
 ];
 
+const FRAME_OPTIONS = [
+    { name: 'Classic', color: 'var(--color-accent)' },
+    { name: 'Emerald', color: '#10b981' },
+    { name: 'Sapphire', color: '#3b82f6' },
+    { name: 'Ruby', color: '#ef4444' },
+    { name: 'Violet', color: '#8b5cf6' },
+    { name: 'Gold', color: '#f59e0b' },
+    { name: 'Midnight', color: '#1e293b' },
+    { name: 'Sakura', color: '#fda4af' },
+];
+
 interface ProfileViewProps {
     level: number;
     xp: number;
     streak: number;
+    avatar: string;
+    frameColor: string;
+    onUpdateAvatar: (url: string) => void;
+    onUpdateFrame: (color: string) => void;
 }
 
-export default function ProfileView({ level, xp, streak }: ProfileViewProps) {
+export default function ProfileView({ 
+    level, xp, streak, avatar, frameColor, onUpdateAvatar, onUpdateFrame 
+}: ProfileViewProps) {
     const xpProgress = (xp % 1000) / 10;
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const url = URL.createObjectURL(file);
+            onUpdateAvatar(url);
+        }
+    };
+
     return (
         <div className="flex flex-col gap-10 w-full max-w-4xl mx-auto py-8 overflow-y-auto custom-scrollbar h-full px-4 mb-20 md:mb-0">
             <div className="flex flex-col md:flex-row gap-8 lg:gap-12 items-center md:items-start border-b border-[var(--color-border-dim)] pb-12">
                 <div className="relative group">
-                    <div className="w-32 h-32 md:w-40 md:h-40 rounded-3xl bg-[var(--color-bg-tertiary)] border-2 border-[var(--color-accent)] flex items-center justify-center overflow-hidden shadow-2xl relative">
-                        <User size={80} className="opacity-20" />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer">
+                    <motion.div 
+                        animate={{ boxShadow: `0 0 20px ${frameColor}44` }}
+                        className="w-32 h-32 md:w-40 md:h-40 rounded-3xl bg-[var(--color-bg-tertiary)] flex items-center justify-center overflow-hidden shadow-2xl relative border-4"
+                        style={{ borderColor: frameColor }}
+                    >
+                        <img src={avatar} alt="Profile" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        <label className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer">
                             <Camera size={24} />
-                        </div>
+                            <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+                        </label>
+                    </motion.div>
+                    <div className="absolute -bottom-1 -right-1 p-2 bg-[var(--color-accent)] text-[var(--color-bg-primary)] rounded-xl shadow-xl hover:scale-110 active:scale-95 transition-all">
+                        <Sparkles size={14} />
                     </div>
-                    <button className="absolute -bottom-1 -right-1 p-2 bg-[var(--color-accent)] text-[var(--color-bg-primary)] rounded-xl shadow-xl hover:scale-110 active:scale-95 transition-all">
-                        <Edit2 size={14} />
-                    </button>
                 </div>
 
                 <div className="flex-1 text-center md:text-left">
@@ -61,6 +93,49 @@ export default function ProfileView({ level, xp, streak }: ProfileViewProps) {
                         ))}
                     </div>
                 </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-6">
+                <section className="flex flex-col gap-6">
+                    <div>
+                        <h3 className="text-[10px] uppercase tracking-widest font-black opacity-40 mb-3">Custom Image</h3>
+                        <div className="flex gap-2">
+                            <input 
+                                type="text" 
+                                placeholder="Paste Image URL"
+                                className="flex-1 bg-[var(--color-bg-primary)] border border-[var(--color-border-dim)] rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-[var(--color-accent)] transition-all placeholder:opacity-20"
+                                onChange={(e) => {
+                                    if (e.target.value.match(/^https?:\/\/.+/)) {
+                                        onUpdateAvatar(e.target.value);
+                                    }
+                                }}
+                            />
+                            <label className="px-4 py-3 bg-[var(--color-bg-secondary)] border border-[var(--color-border-dim)] rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[var(--color-bg-tertiary)] cursor-pointer flex items-center justify-center transition-all">
+                                <Edit2 size={12} className="mr-2 opacity-60" />
+                                Upload
+                                <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+                            </label>
+                        </div>
+                    </div>
+                </section>
+
+                <section className="flex flex-col gap-4">
+                    <h3 className="text-[10px] uppercase tracking-widest font-black opacity-40">Choose Frame</h3>
+                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+                        {FRAME_OPTIONS.map((f) => (
+                            <button 
+                                key={f.name}
+                                onClick={() => onUpdateFrame(f.color)}
+                                className={`flex flex-col items-center gap-3 p-4 rounded-2xl border-2 transition-all group ${frameColor === f.color ? 'border-[var(--color-accent)] bg-white/5' : 'border-white/5 hover:bg-white/[0.02]'}`}
+                            >
+                                <div className="w-8 h-8 rounded-xl border-2 flex items-center justify-center" style={{ borderColor: f.color, backgroundColor: `${f.color}22` }}>
+                                    <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: f.color }} />
+                                </div>
+                                <span className={`text-[9px] font-bold uppercase tracking-tighter ${frameColor === f.color ? 'opacity-100' : 'opacity-40'}`}>{f.name}</span>
+                            </button>
+                        ))}
+                    </div>
+                </section>
             </div>
 
             <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
